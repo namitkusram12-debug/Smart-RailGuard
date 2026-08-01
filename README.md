@@ -1,27 +1,45 @@
 # Smart RailGuard
 
-Smart RailGuard is an IoT-based railway accident prevention system developed using ESP32 and multiple sensors.
+An IoT-based Railway Accident Prevention System using ESP32 and multiple sensors to detect hazards and provide real-time monitoring.
 
 ## Features
-- Detects obstacles using Ultrasonic Sensor
-- Monitors vibration, IR, and temperature sensors
-- Sends real-time alerts
-- Displays sensor data using the Blynk dashboard
 
-## Technologies Used
+- Obstacle detection using Ultrasonic Sensor
+- IR-based object detection
+- Vibration monitoring
+- Temperature and humidity monitoring
+- Real-time data transmission over Wi-Fi
+- Buzzer and LED alerts
+- REST API integration
+
+## Hardware Used
+
 - ESP32
-- Arduino IDE
-- Python
-- HTML
-- CSS
-- Blynk
-- Ultrasonic Sensor
+- DHT11 Sensor
+- Ultrasonic Sensor (HC-SR04)
 - IR Sensor
 - Vibration Sensor
-- Temperature Sensor
+- LEDs
+- Buzzer
 
-## Project Objective
-To improve railway safety by monitoring track conditions and detecting potential hazards in real time.
+## Software Used
+
+- Arduino IDE
+- ESP32 Board Package
+- HTTPClient Library
+- WiFi Library
+
+## Project Structure
+
+- `SmartRailGuard.ino` – Main ESP32 program
+
+## Future Improvements
+
+- Blynk Dashboard Integration
+- GPS-based Train Tracking
+- SMS/Emergency Alerts
+- AI-based Hazard Detection
 
 ## Author
-Namit Kusram
+
+**Namit Kusram**
