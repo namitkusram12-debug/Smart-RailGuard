@@ -1,0 +1,198 @@
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <DHT.h>
+
+// ======================
+// WIFI DETAILS
+// ======================
+const char* ssid = "Redmi Note 10 Pro Max";
+const char* password = "00000000";
+
+// ======================
+// SERVER URL
+// ======================
+const char* serverUrl = "http://10.116.18.30:3001/api/sensor-data";
+
+// ======================
+// SENSOR PINS
+// ======================
+#define TRIG_PIN 5
+#define ECHO_PIN 18
+#define IR_PIN 21
+#define VIBRATION_PIN 34
+#define DHT_PIN 4
+#define DHT_TYPE DHT11
+
+DHT dht(DHT_PIN, DHT_TYPE);
+
+// ======================
+// OUTPUT PIN
+// ======================
+#define GREEN_LED 2
+#define RED_LED 19
+#define BUZZER 23
+
+long duration;
+int distance;
+float temperature;
+float humidity;
+int vibration;
+int ir;
+
+// ======================
+// WIFI CONNECT FUNCTION
+// ======================
+void connectWiFi() {
+Serial.println("Disconnecting old WiFi...");
+  WiFi.disconnect(true);
+  delay(1000);
+
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to WiFi");
+
+  int timeout = 20; // 10 seconds max
+
+  while (WiFi.status() != WL_CONNECTED && timeout > 0) {
+    delay(500);
+    Serial.print(".");
+    timeout--;
+  }
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("\n✅ Connected to WiFi!");
+    Serial.print("ESP IP: ");
+    Serial.println(WiFi.localIP());
+  } else {
+    Serial.println("\n❌ Failed to connect!");
+  }
+
+}
+// ======================
+// SETUP
+// ======================
+void setup() {
+  Serial.begin(115200);
+  dht.begin();
+
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+  pinMode(IR_PIN, INPUT);
+  pinMode(VIBRATION_PIN, INPUT);
+
+  pinMode(RED_LED, OUTPUT);
+  pinMode(BUZZER, OUTPUT);
+
+  connectWiFi();
+  WiFi.setSleep(false);
+}
+
+// ======================
+// LOOP
+// ======================
+void loop() {
+
+  // ===== 1. READ SENSORS =====
+
+  // Ultrasonic
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  duration = pulseIn(ECHO_PIN, HIGH, 30000);
+  distance = duration * 0.034 / 2;
+
+  // Temperature (LM35)
+  temperature = dht.readTemperature();
+  humidity = dht.readHumidity();
+
+  if (isnan(temperature)) {
+    Serial.println("Failed to read from DHT!");
+    return;
+  }
+
+  // Sensors
+  ir = digitalRead(IR_PIN);
+  if (ir== LOW){
+    Serial.print("0:1"); //Obstacle detected
+  }
+  else{
+    Serial.print("0:0"); //No Obstacle detected
+  }
+  vibration = analogRead(VIBRATION_PIN);
+
+  Serial.print("Distance: ");
+Serial.println(distance);
+
+Serial.print("Temperature: ");
+Serial.println(temperature);
+
+Serial.print("IR: ");
+Serial.println(ir);
+
+Serial.print("Vibration: ");
+Serial.println(vibration);
+
+Serial.println("----------------------");
+
+  // ===== 2. LED + BUZZER LOGIC =====
+digitalWrite(GREEN_LED, LOW);
+digitalWrite(RED_LED, LOW);
+digitalWrite(BUZZER, LOW);
+
+// 🚨 PRIORITY CONDITIONS (Sensors)
+ if (ir == LOW || vibration == HIGH || temperature > 35) {
+  digitalWrite(RED_LED, HIGH);
+  digitalWrite(BUZZER, HIGH);
+}
+
+// 📏 DISTANCE CONDITIONS
+else if (distance > 0 && distance < 15) {
+  digitalWrite(RED_LED, HIGH);
+  digitalWrite(BUZZER, HIGH);
+}
+else if (distance >= 15 && distance < 30) {
+  digitalWrite(RED_LED, HIGH);
+  digitalWrite(BUZZER, HIGH);
+}
+
+else {
+  digitalWrite(GREEN_LED, HIGH);
+}
+
+// ===== 3. SEND DATA =====
+
+if (WiFi.status() != WL_CONNECTED) {
+  Serial.println("⚠️ WiFi lost. Reconnecting...");
+  connectWiFi();
+}
+
+if (WiFi.status() == WL_CONNECTED) {
+
+  HTTPClient http;
+
+  http.begin(serverUrl);
+  http.addHeader("Content-Type", "application/json");
+
+  String json = "{";
+  json += "\"distance\":" + String(distance) + ",";
+  json += "\"temperature\":" + String(temperature, 1) + ",";
+  json += "\"vibration\":" + String(vibration) + ",";
+  json += "\"ir\":" + String(ir);
+  json += "}";
+
+  int response = http.POST(json);
+
+  Serial.print("Response: ");
+  Serial.println(response);
+
+  http.end();
+}
+  else {
+    Serial.println("❌ WiFi Disconnected! Reconnecting...");
+    connectWiFi();
+  }
+
+  delay(200);
+}
