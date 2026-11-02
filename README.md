@@ -1,45 +1,72 @@
-# Smart RailGuard
+# 🚆 Smart RailGuard
 
-An IoT-based Railway Accident Prevention System using ESP32 and multiple sensors to detect hazards and provide real-time monitoring.
+### IoT-Based Railway Safety Monitoring Prototype
 
-## Features
+Smart RailGuard is an IoT-based prototype designed to monitor potential railway hazards using sensors connected to an ESP32.
 
-- Obstacle detection using Ultrasonic Sensor
-- IR-based object detection
+## 🎯 Objective
+
+The goal of the project is to demonstrate how sensors and real-time monitoring can be used to identify potential railway safety hazards and generate alerts.
+
+## ✨ Features
+
+- Obstacle detection
 - Vibration monitoring
-- Temperature and humidity monitoring
-- Real-time data transmission over Wi-Fi
-- Buzzer and LED alerts
-- REST API integration
+- Temperature monitoring
+- IR-based detection
+- Real-time sensor monitoring
+- Alert mechanism
+- ESP32-based processing
 
-## Hardware Used
+## 🛠️ Technologies
 
 - ESP32
-- DHT11 Sensor
-- Ultrasonic Sensor (HC-SR04)
+- Arduino IDE
+- C/C++
+- Ultrasonic Sensor
 - IR Sensor
 - Vibration Sensor
-- LEDs
+- Temperature Sensor
 - Buzzer
+- LED
 
-## Software Used
+## ⚙️ Working
 
-- Arduino IDE
-- ESP32 Board Package
-- HTTPClient Library
-- WiFi Library
+Sensors collect information from the surrounding environment.
 
-## Project Structure
+↓
 
-- `SmartRailGuard.ino` – Main ESP32 program
+ESP32 receives the sensor data.
 
-## Future Improvements
+↓
 
-- Blynk Dashboard Integration
-- GPS-based Train Tracking
-- SMS/Emergency Alerts
-- AI-based Hazard Detection
+The data is processed according to predefined conditions.
 
-## Author
+↓
 
-**Namit Kusram**
+If a potential hazard is detected, the system generates an alert.
+
+## 📷 Project Images
+
+Add actual photos of:
+
+1. Complete hardware prototype
+2. ESP32 and sensors
+3. Dashboard
+4. Final project setup
+
+## 👥 Team
+
+Add your actual team members here if appropriate.
+
+## ⚠️ Disclaimer
+
+This is an academic prototype developed for demonstration and learning purposes. It is not a certified railway safety system.
+
+## 📚 Future Improvements
+
+- AI-based anomaly detection
+- Cloud-based monitoring
+- Improved sensor reliability
+- GPS integration
+- Mobile notifications
